@@ -15,5 +15,5 @@
         "Temp/": true,
         "UIElementsSchema/": true
     },
-    "dotnet.defaultSolution": "2024_1-donkeykong-clone.sln"
+    "dotnet.defaultSolution": "2024_1-donkeykong-clone.sln",
 }
