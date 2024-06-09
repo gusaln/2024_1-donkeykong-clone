@@ -16,6 +16,7 @@ public class Player : MonoBehaviour
     private bool grounded;
     private bool canClimb;
     private bool climbing;
+    private bool running;
 
     public float moveSpeed = 3f;
     public float jumpStrength = 4f;
@@ -29,7 +30,7 @@ public class Player : MonoBehaviour
 
     private void OnEnable()
     {
-        InvokeRepeating(nameof(AnimateSprite), 1f/12f, 1f/12f);
+        InvokeRepeating(nameof(AnimateSprite), 1f / 12f, 1f / 12f);
     }
 
     private void OnDisable()
@@ -79,24 +80,47 @@ public class Player : MonoBehaviour
 
     private void SetDirection()
     {
-        if (canClimb) {
-            direction.y = Input.GetAxis("Vertical") * moveSpeed;
-        } else if (grounded && Input.GetButtonDown("Jump")) {
-            direction = Vector2.up * jumpStrength;
-        } else {
-            direction += Physics2D.gravity * Time.deltaTime;
+
+        if ((canClimb && Input.GetAxis("Vertical") > 0))
+        {
+            climbing = true;
         }
 
-        direction.x = Input.GetAxis("Horizontal") * moveSpeed;
+        if (climbing)
+        {
+            if (canClimb)
+            {
+                direction.y = Input.GetAxis("Vertical") * moveSpeed;
+                return;
+            }
+            else
+            {
+                climbing = false;
+            }
+        }
 
+        if (grounded && Input.GetButtonDown("Jump"))
+        {
+            direction = Vector2.up * jumpStrength;
+        }
+        else
+        {
+            direction += Physics2D.gravity * Time.deltaTime;
+        }
         // Prevent gravity from building up infinitely
-        if (grounded) {
+        if (grounded)
+        {
             direction.y = Mathf.Max(direction.y, -1f);
         }
 
-        if (direction.x > 0f) {
+        direction.x = Input.GetAxis("Horizontal") * moveSpeed;
+        running = direction.x > 0 || direction.x < 0;
+        if (direction.x > 0f)
+        {
             transform.eulerAngles = Vector3.zero;
-        } else if (direction.x < 0f) {
+        }
+        else if (direction.x < 0f)
+        {
             transform.eulerAngles = new Vector3(0f, 180f, 0f);
         }
     }
@@ -108,21 +132,28 @@ public class Player : MonoBehaviour
 
     private void AnimateSprite()
     {
-        if (canClimb)
+        if (climbing)
         {
             spriteRenderer.sprite = climbSprite;
         }
-        else if (direction.x != 0f)
+
+        if (running)
         {
             spriteIndex++;
 
-            if (spriteIndex >= runSprites.Length) {
+            if (spriteIndex >= runSprites.Length)
+            {
                 spriteIndex = 0;
             }
 
-            if (spriteIndex > 0 && spriteIndex <= runSprites.Length) {
+            if (spriteIndex > 0 && spriteIndex <= runSprites.Length)
+            {
                 spriteRenderer.sprite = runSprites[spriteIndex];
             }
+        }
+        else if (grounded)
+        {
+            spriteRenderer.sprite = runSprites[0];
         }
     }
 
@@ -135,8 +166,8 @@ public class Player : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Obstacle"))
         {
-            enabled = false;
-            FindObjectOfType<GameManager>().LevelFailed();
+            // enabled = false;
+            // FindObjectOfType<GameManager>().LevelFailed();
         }
     }
 
