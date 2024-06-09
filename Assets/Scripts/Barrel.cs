@@ -15,6 +15,10 @@ public class Barrel : MonoBehaviour
         if (collision.gameObject.layer == LayerMask.NameToLayer("Ground")) {
             rigidbody.AddForce(collision.transform.right * speed, ForceMode2D.Impulse);
         }
+
+        if (collision.gameObject.layer == LayerMask.NameToLayer("BarrelDespawner")) {
+            Destroy(gameObject);
+        }
     }
 
 }
