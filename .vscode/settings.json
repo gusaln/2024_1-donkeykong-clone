@@ -15,5 +15,15 @@
         "Temp/": true,
         "UIElementsSchema/": true
     },
+    "omnisharp.sdkPath": "/usr/share/dotnet",
+    "dotnet.dotnetPath": "/usr/share/dotnet",
     "dotnet.defaultSolution": "2024_1-donkeykong-clone.sln",
+    "dotnetAcquisitionExtension.enableTelemetry": false,
+    "dotnetAcquisitionExtension.existingDotnetPath": [
+        {
+            "extensionId": "ms-dotnettools.csdevkit",
+            "path": "/usr/share/dotnet",
+        }
+    ],
+    "dotnetAcquisitionExtension.sharedExistingDotnetPath": "/usr/share/dotnet",
 }
