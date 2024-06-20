@@ -8,7 +8,7 @@ public class Player : MonoBehaviour
     // public Sprite climbSprite;
     // private int spriteIndex;
 
-    private new Rigidbody2D rigidbody;
+    private new Rigidbody2D rigidBody;
     private new Collider2D collider;
 
     private Animator animator;
@@ -16,9 +16,13 @@ public class Player : MonoBehaviour
     private readonly Collider2D[] overlaps = new Collider2D[4];
     private Vector2 direction;
 
+
+    private bool isDead = false;
+
     private bool _isGrounded;
-    private bool IsGrounded {
-         get
+    private bool IsGrounded
+    {
+        get
         {
             return _isGrounded;
         }
@@ -30,8 +34,9 @@ public class Player : MonoBehaviour
     }
     private bool canClimb;
     private bool _isClimbing;
-    private bool IsClimbing {
-         get
+    private bool IsClimbing
+    {
+        get
         {
             return _isClimbing;
         }
@@ -48,9 +53,10 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
-        rigidbody = GetComponent<Rigidbody2D>();
+        rigidBody = GetComponent<Rigidbody2D>();
         collider = GetComponent<Collider2D>();
         animator = GetComponent<Animator>();
+        animator.SetBool("isDead", false);
     }
 
     private void OnDisable()
@@ -60,6 +66,11 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
+        if (isDead)
+        {
+            return;
+        }
+
         CheckCollision();
         SetDirection();
         animator.SetFloat("xVelocity", Math.Abs(direction.x));
@@ -150,7 +161,7 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
-        rigidbody.MovePosition(rigidbody.position + direction * Time.fixedDeltaTime);
+        rigidBody.MovePosition(rigidBody.position + direction * Time.fixedDeltaTime);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -162,9 +173,16 @@ public class Player : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Obstacle"))
         {
-            enabled = false;
-            FindObjectOfType<GameManager>().LevelFailed();
+            isDead = true;
+            animator.SetBool("isDead", true);
+            Invoke(nameof(Lose), 2f);
         }
     }
 
+    private void Lose()
+    {
+        FindObjectOfType<GameManager>().LevelFailed();
+        enabled = false;
+        Time.timeScale = 0;
+    }
 }

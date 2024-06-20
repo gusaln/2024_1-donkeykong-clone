@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
 
     public void LevelComplete()
     {
-        
+        Time.timeScale = 0;
     }
 
     public void LevelFailed()
