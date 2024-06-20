@@ -13,11 +13,11 @@ public class Player : MonoBehaviour
 
     private Animator animator;
 
-    private Collider2D[] overlaps = new Collider2D[4];
+    private readonly Collider2D[] overlaps = new Collider2D[4];
     private Vector2 direction;
 
     private bool _isGrounded;
-    private bool isGrounded {
+    private bool IsGrounded {
          get
         {
             return _isGrounded;
@@ -30,7 +30,7 @@ public class Player : MonoBehaviour
     }
     private bool canClimb;
     private bool _isClimbing;
-    private bool isClimbing {
+    private bool IsClimbing {
          get
         {
             return _isClimbing;
@@ -48,16 +48,10 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
-        // spriteRenderer = GetComponent<SpriteRenderer>();
         rigidbody = GetComponent<Rigidbody2D>();
         collider = GetComponent<Collider2D>();
         animator = GetComponent<Animator>();
     }
-
-    // private void OnEnable()
-    // {
-    //     InvokeRepeating(nameof(AnimateSprite), 1f / 12f, 1f / 12f);
-    // }
 
     private void OnDisable()
     {
@@ -74,7 +68,7 @@ public class Player : MonoBehaviour
 
     private void CheckCollision()
     {
-        isGrounded = false;
+        IsGrounded = false;
         canClimb = false;
 
         // the amount that two colliders can overlap
@@ -94,10 +88,10 @@ public class Player : MonoBehaviour
             if (hit.layer == LayerMask.NameToLayer("Ground"))
             {
                 // Only set as grounded if the platform is below the player
-                isGrounded = hit.transform.position.y < (transform.position.y - 0.5f + skinWidth);
+                IsGrounded = hit.transform.position.y < (transform.position.y - 0.5f + skinWidth);
 
                 // Turn off collision on platforms the player is not grounded to
-                Physics2D.IgnoreCollision(overlaps[i], collider, !isGrounded);
+                Physics2D.IgnoreCollision(overlaps[i], collider, !IsGrounded);
             }
             else if (hit.layer == LayerMask.NameToLayer("Ladder"))
             {
@@ -109,12 +103,12 @@ public class Player : MonoBehaviour
     private void SetDirection()
     {
 
-        if ((canClimb && Input.GetAxis("Vertical") > 0))
+        if (canClimb && Input.GetAxis("Vertical") > 0)
         {
-            isClimbing = true;
+            IsClimbing = true;
         }
 
-        if (isClimbing)
+        if (IsClimbing)
         {
             if (canClimb)
             {
@@ -124,11 +118,11 @@ public class Player : MonoBehaviour
             }
             else
             {
-                isClimbing = false;
+                IsClimbing = false;
             }
         }
 
-        if (isGrounded && Input.GetButtonDown("Jump"))
+        if (IsGrounded && Input.GetButtonDown("Jump"))
         {
             direction = Vector2.up * jumpStrength;
         }
@@ -137,7 +131,7 @@ public class Player : MonoBehaviour
             direction += Physics2D.gravity * Time.deltaTime;
         }
         // Prevent gravity from building up infinitely
-        if (isGrounded)
+        if (IsGrounded)
         {
             direction.y = Mathf.Max(direction.y, -1f);
         }
@@ -159,33 +153,6 @@ public class Player : MonoBehaviour
         rigidbody.MovePosition(rigidbody.position + direction * Time.fixedDeltaTime);
     }
 
-    // private void AnimateSprite()
-    // {
-    //     if (climbing)
-    //     {
-    //         spriteRenderer.sprite = climbSprite;
-    //     }
-
-    //     if (running)
-    //     {
-    //         spriteIndex++;
-
-    //         if (spriteIndex >= runSprites.Length)
-    //         {
-    //             spriteIndex = 0;
-    //         }
-
-    //         if (spriteIndex > 0 && spriteIndex <= runSprites.Length)
-    //         {
-    //             spriteRenderer.sprite = runSprites[spriteIndex];
-    //         }
-    //     }
-    //     else if (grounded)
-    //     {
-    //         spriteRenderer.sprite = runSprites[0];
-    //     }
-    // }
-
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Objective"))
@@ -195,8 +162,8 @@ public class Player : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Obstacle"))
         {
-            // enabled = false;
-            // FindObjectOfType<GameManager>().LevelFailed();
+            enabled = false;
+            FindObjectOfType<GameManager>().LevelFailed();
         }
     }
 
