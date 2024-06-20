@@ -8,13 +8,21 @@ public class Spawner : MonoBehaviour
 
     private void Start()
     {
-        Spawn();
+        PlayAnimation();
+    }
+
+    private void PlayAnimation() {
+        FindObjectOfType<DonkeyKong>().PlayThrow();
+
+        Invoke(nameof(Spawn), 0.5f);
     }
 
     private void Spawn()
     {
+        FindObjectOfType<DonkeyKong>().StopThrow();
+        
         Instantiate(prefab, transform.position, Quaternion.identity);
-        Invoke(nameof(Spawn), Random.Range(minTime, maxTime));
+        Invoke(nameof(PlayAnimation), Random.Range(minTime, maxTime));
     }
 
 }
