@@ -20,18 +20,23 @@ public class Player : MonoBehaviour
     private bool isDead = false;
 
     private bool _isGrounded;
-    private bool IsGrounded
+    private bool IsGrounded {get; set;}
+
+    private bool _isJumping;
+    private bool IsJumping
     {
         get
         {
-            return _isGrounded;
+            return _isJumping;
         }
         set
         {
-            _isGrounded = value;
-            animator.SetBool("isJumping", !_isGrounded);
+            _isJumping = value;
+            animator.SetBool("isJumping", _isJumping);
         }
     }
+
+
     private bool canClimb;
     private bool _isClimbing;
     private bool IsClimbing
@@ -117,25 +122,27 @@ public class Player : MonoBehaviour
         if (canClimb && Input.GetAxis("Vertical") > 0)
         {
             IsClimbing = true;
+            IsGrounded = false;
         }
 
         if (IsClimbing)
         {
-            if (canClimb)
+            if (IsGrounded || !canClimb)
+            {
+                IsClimbing = false;
+            }
+            else
             {
                 direction.x = 0;
                 direction.y = Input.GetAxis("Vertical") * moveSpeed;
                 return;
-            }
-            else
-            {
-                IsClimbing = false;
             }
         }
 
         if (IsGrounded && Input.GetButtonDown("Jump"))
         {
             direction = Vector2.up * jumpStrength;
+            IsJumping = true;
         }
         else
         {
@@ -145,6 +152,7 @@ public class Player : MonoBehaviour
         if (IsGrounded)
         {
             direction.y = Mathf.Max(direction.y, -1f);
+            IsJumping = false;
         }
 
         direction.x = Input.GetAxis("Horizontal") * moveSpeed;
@@ -181,8 +189,8 @@ public class Player : MonoBehaviour
 
     private void Lose()
     {
-        FindObjectOfType<GameManager>().LevelFailed();
-        enabled = false;
         Time.timeScale = 0;
+        enabled = false;
+        FindObjectOfType<GameManager>().LevelFailed();
     }
 }
